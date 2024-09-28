@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resgatar Código</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: #333;
+            color: #f4f4f4;
+            font-family: 'Georgia', serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            width: 300px;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #e7180a;
+        }
+
+        input[type="text"] {
+            width: 80%;
+            height: 40px;
+            padding: 10px;
+            border: 2px solid #e7180a;;
+            border-radius: 5px;
+            background: #222;
+            color: #f4f4f4;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+
+        button {
+            width: 80%;
+            height: 40px;
+            background-color: #e7180a;;
+            color: #f8f4f4;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 19px;
+        }
+
+        button:hover {
+            background-color: #e7180a;;
+        }
+
+        .message {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Resgate seu Código</h1>
+        <input type="text" id="codeInput" placeholder="Digite 0000 para resetar." />
+        <button onclick="redeemCode()">Resgatar</button>
+        <div id="message" class="message"></div>
+    </div>
+
+    <script>
+        function setCookie(name, value, days) {
+            let expires = "";
+            if (days) {
+                const date = new Date();
+                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                expires = "; expires=" + date.toUTCString();
+            }
+            document.cookie = name + "=" + (value || "") + expires + "; path=/";
+        }
+
+        function getCookie(name) {
+            const nameEQ = name + "=";
+            const ca = document.cookie.split(';');
+            for (let i = 0; i < ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+                if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+            }
+            return null;
+        }
+
+        function redeemCode() {
+            const code = document.getElementById('codeInput').value;
+            const codes = ['0000', '9143'];
+            const skins = ['skin padrão', 'skin zumbi']
+            if (codes.includes(code)) {
+                setCookie('code', code, 180);  // Salva o código no cookie por 180 dias (6 meses)
+                document.getElementById('message').innerText = "Código resgatado com sucesso: " + skins[codes.indexOf(code)];
+                document.getElementById('codeInput').value = '';
+            } else {
+                document.getElementById('message').innerText = "Por favor, digite um código válido.";
+            }
+        }
+    </script>
+
+</body>
+</html>

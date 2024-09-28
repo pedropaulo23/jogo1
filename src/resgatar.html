@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pergaminhos de Transformação</title>
+  <style>
+    body {
+      background-color: #2d2d2d;
+      color: white;
+      font-family: 'Arial', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      flex-direction: column;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    .skin-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    .skin {
+      width: 150px;
+      height: 200px;
+      border: 2px solid #fff;
+      border-radius: 10px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.2s, border-color 0.2s;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+
+    .skin img {
+      width: 80px;
+      height: 100px;
+      object-fit: cover;
+    }
+
+    .skin:hover {
+      transform: scale(1.1);
+    }
+
+    .skin-title {
+      margin-top: 10px;
+      text-align: center;
+    }
+
+    /* Estilo para a skin selecionada */
+    .selected {
+      border-color: purple; /* Cor roxa para indicar magia */
+    }
+  </style>
+</head>
+<body>
+  <h1>Pergaminhos de Transformação</h1>
+  <div class="skin-container" id="skin-container">
+    <!-- As skins (pergaminhos) serão inseridas dinamicamente aqui -->
+  </div>
+
+  <script>
+    // Lista de skins e seus títulos (pergaminhos de transformação)
+    const skins = [
+      { id: 0, title: 'Pergaminho de Virgílio (Skin Padrão)', image: 'pergaminho.png' },
+      { id: 1, title: 'Pergaminho de Transformação Zumbi', image: 'pergaminho.png' }
+    ];
+
+    // Função para pegar um cookie pelo nome
+    function getCookie(name) {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop().split(';').shift();
+      return null;
+    }
+
+    // Função para definir um cookie
+    function setCookie(name, value, days) {
+      const date = new Date();
+      date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+      const expires = `expires=${date.toUTCString()}`;
+      document.cookie = `${name}=${value}; ${expires}; path=/`;
+    }
+
+    // Função para carregar as skins com base no valor do cookie
+    function loadSkins() {
+      const skinContainer = document.getElementById('skin-container');
+      skinContainer.innerHTML = ''; // Limpa o container
+
+      // Pega o valor do cookie 'progress' ou define como 0 se não existir
+      let progress = parseInt(getCookie('progress')) || 0;
+      let selectedSkin = parseInt(getCookie('code')) || 0; // Pega a skin selecionada
+
+      // Exibe as skins de acordo com o nível de progresso
+      skins.forEach(skin => {
+        if (skin.id <= progress) {
+          const skinDiv = document.createElement('div');
+          skinDiv.classList.add('skin');
+          skinDiv.innerHTML = `<img src="${skin.image}" alt="${skin.title}"><div class="skin-title">${skin.title}</div>`;
+
+          // Verifica se essa skin foi selecionada e aplica a classe 'selected'
+          if (skin.id === selectedSkin) {
+            skinDiv.classList.add('selected');
+          }
+
+          // Ao clicar na skin, ela será selecionada, a borda mudará de cor e o cookie 'selectedSkin' será atualizado
+          skinDiv.onclick = function () {
+            // Remove a classe 'selected' de todas as skins
+            document.querySelectorAll('.skin').forEach(s => s.classList.remove('selected'));
+
+            // Adiciona a classe 'selected' na skin clicada
+            skinDiv.classList.add('selected');
+
+            // Atualiza o cookie com a skin selecionada
+            setCookie('code', skin.id, 7);
+            setCookie('progress', progress, 180);
+          };
+
+          skinContainer.appendChild(skinDiv);
+        }
+      });
+    }
+
+    // Chama a função ao carregar a página para exibir as skins disponíveis
+    window.onload = loadSkins;
+  </script>
+</body>
+</html>

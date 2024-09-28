@@ -1,0 +1,19 @@
+{
+  "name": "jogo",
+  "version": "1.0.0",
+  "main": "game.js",
+  "scripts": {
+    "start": "parcel src/index.html --open",
+    "build": "parcel build src/index.html --dist-dir ./dist"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "create.js": "^0.0.16",
+    "parcel-bundler": "^1.12.5",
+    "phaser": "^3.80.1",
+    "preload.js": "^1.0.0"
+  }
+}

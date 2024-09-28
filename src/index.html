@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Castelo Do Diabo</title>
+  <style>
+    html, body {
+    background-color: black;
+    margin: 0;
+    padding: 0;
+    overflow: hidden; /* Garantir que não haja barra de rolagem */
+    width: 100%;
+    height: 100%;
+    }
+    canvas {
+    display: block; /* Remover possíveis espaçamentos ao redor do canvas */
+    }
+  </style>
+  <script>
+    window.addEventListener('resize', () => {
+    game.scale.resize(window.innerWidth, window.innerHeight);
+    });
+  </script>
+</head>
+<body>
+  <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.js"></script>
+  <script src="https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexuiplugin.min.js"></script>
+  <script type="module" src="game.js"></script>
+</body>
+</html>

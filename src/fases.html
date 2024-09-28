@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Seleção de Fase</title>
+  <style>
+    body {
+      background-color: #2d2d2d;
+      color: white;
+      font-family: 'Arial', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      flex-direction: column;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    .fase-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .fase-btn {
+      background-color: #444;
+      border: 2px solid #888;
+      padding: 10px 20px;
+      border-radius: 5px;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .fase-btn:hover {
+      background-color: #666;
+    }
+  </style>
+</head>
+<body>
+  <h1>Selecione uma Fase</h1>
+  <div class="fase-container" id="fase-container">
+    <!-- Botões das fases serão inseridos aqui -->
+  </div>
+
+  <script>
+    // Função para pegar um cookie pelo nome
+    function getCookie(name) {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop().split(';').shift();
+      return null;
+    }
+
+    // Função para definir um cookie
+    function setCookie(name, value, days) {
+      const date = new Date();
+      date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+      const expires = `expires=${date.toUTCString()}`;
+      document.cookie = `${name}=${value}; ${expires}; path=/`;
+    }
+
+    // Função para carregar as fases
+    function loadFases() {
+      const faseContainer = document.getElementById('fase-container');
+      faseContainer.innerHTML = ''; // Limpa o container
+
+      // Pega o cookie 'faseliberado' ou define como '1' se não existir
+      let faseLiberado = parseInt(getCookie('faseliberado')) || 1;
+
+      // Gera botões para cada fase desde a fase 1 até o valor do cookie
+      for (let i = faseLiberado; i >= 1; i--) {
+        const faseBtn = document.createElement('button');
+        faseBtn.classList.add('fase-btn');
+        faseBtn.textContent = `Fase ${i}`;
+
+        // Ao clicar na fase, muda o cookie 'fase' para o número correspondente
+        faseBtn.onclick = function () {
+          setCookie('fase', i, 7); // Define o cookie 'fase' por 7 dias
+          alert(`Você escolheu a Fase ${i}!`);
+        };
+
+        faseContainer.appendChild(faseBtn);
+      }
+    }
+
+    // Chama a função ao carregar a página
+    window.onload = loadFases;
+  </script>
+</body>
+</html>

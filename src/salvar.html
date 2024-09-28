@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barra de Energia Crescente</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+            position: relative;
+        }
+
+        #message {
+            color: white;
+            text-align: center;
+            font-size: 24px;
+            z-index: 0; /* Coloca o texto atrás dos pentagramas */
+            position: relative;
+        }
+
+        #score {
+            color: white;
+            font-size: 20px;
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            z-index: 0; /* Coloca o placar atrás dos pentagramas */
+        }
+
+        #timer {
+            color: white;
+            font-size: 20px;
+            position: absolute;
+            top: 40px;
+            right: 20px;
+            z-index: 0; /* Coloca o cronômetro atrás dos pentagramas */
+        }
+
+        #energyBarContainer {
+            position: absolute;
+            bottom: 20%;
+            width: 60%;
+            height: 15px;
+            background-color: grey;
+            border-radius: 25px;
+            overflow: hidden;
+            z-index: 0; /* Coloca a barra de energia atrás dos pentagramas */
+        }
+
+        #energyBar {
+            height: 100%;
+            width: 0;
+            background-color: red;
+            transition: width 0.1s linear;
+        }
+
+        .pentagram {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background-image: url('salvar.png'); /* Substitua pelo link da imagem do pentagrama */
+            background-size: contain;
+            background-repeat: no-repeat;
+            cursor: pointer;
+            z-index: 1; /* Certifica-se que os pentagramas estão por cima */
+        }
+
+        #customAlert {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.8);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            width: 300px;
+            text-align: center;
+        }
+
+        #customAlert button {
+            background-color: #555;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+
+        #customAlert button:hover {
+            background-color: #777;
+        }
+
+        #overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+    </style>
+</head>
+<body>
+    <div id="overlay"></div>
+
+    <div id="customAlert">
+        <p id="alertMessage">Mensagem de alerta aqui.</p>
+        <button onclick="closeAlert()">OK</button>
+    </div>
+    <div id="message">Complete o ritual clicando nos pentagramas, antes que o tempo acabe!</div>
+    <div id="score">Pontuação: 0</div>
+    <div id="timer">Complete o ritual em: 25s</div>
+    <div id="energyBarContainer">
+        <div id="energyBar"></div>
+    </div>
+
+    <script>
+        const scoreElement = document.getElementById('score');
+        const timerElement = document.getElementById('timer');
+        const energyBar = document.getElementById('energyBar');
+        let score = 0;
+        const gameDuration = 25000;  // Duração do jogo: 25 segundos
+        let startTime = Date.now();
+        let pentagrams = [];
+        let interval;
+        function setCookie(name, value, days) {
+            const date = new Date();
+            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+            const expires = `expires=${date.toUTCString()}`;
+            document.cookie = `${name}=${value}; ${expires}; path=/`;
+        }
+
+        function getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+        return null;
+        }
+        if (Number(getCookie('fase')) == 2) {
+           
+            setCookie('progress', '1', 180);  // Salva o código no cookie por 180 dias (6 meses)
+            
+            
+            
+        } else if (Number(getCookie('fase')) == 3) {
+            //setCookie('progress', '1', 180);
+            window.location.href = "index.html";
+        } else if (Number(getCookie('fase')) == 4) {
+            window.location.href = "index.html";
+        }
+
+        // Função para criar pentagramas aleatórios
+        function createPentagrams() {
+            for (let i = 0; i < 50; i++) {
+                const pentagram = document.createElement('div');
+                pentagram.className = 'pentagram';
+                pentagram.style.top = `${Math.random() * 70}vh`;
+                pentagram.style.left = `${Math.random() * 70}vw`;
+                pentagram.addEventListener('click', () => {
+                    score++;
+                    scoreElement.textContent = `Pontuação: ${score}`;
+                    pentagram.remove();  // Remove o pentagrama ao ser clicado
+                    updateEnergyBar();
+                });
+                document.body.appendChild(pentagram);
+                pentagrams.push(pentagram);
+            }
+        }
+        
+        
+
+        function showAlert(message) {
+            document.getElementById('alertMessage').innerText = message;
+            document.getElementById('alertMessage').style.color = 'red';
+            document.getElementById('customAlert').style.display = 'block';
+            document.getElementById('overlay').style.display = 'block';
+        }
+        
+
+        function closeAlert() {
+            document.getElementById('customAlert').style.display = 'none';
+            document.getElementById('overlay').style.display = 'none';
+            if (score >= 50) {  // Verifica se todos os pentagramas foram clicados
+                window.location.href = "index.html"; // Redireciona após o término
+            } else {
+                location.reload();
+            }
+            
+        }
+
+        // Função para atualizar a barra de energia
+        function updateEnergyBar() {
+            const progress = Math.min(score / 50, 1);  // Considerando 50 pentagramas
+            energyBar.style.width = `${progress * 100}%`;
+        }
+
+        // Função para iniciar o jogo
+        function startGame() {
+            //const codes = ['0000', '9143'];
+            //const code = '0000, 9143'
+            
+            createPentagrams();
+            interval = setInterval(() => {
+                const elapsedTime = Date.now() - startTime;
+                const remainingTime = Math.max(gameDuration - elapsedTime, 0);
+                timerElement.textContent = `Complete o ritual em: ${Math.ceil(remainingTime / 1000)}s`;
+                if (remainingTime <= 0) {
+                    endGame();
+                }
+            }, 1000);
+            
+            
+        }
+
+        // Função para encerrar o jogo
+        function endGame() {
+            clearInterval(interval);
+            if (score >= 50) {  // Verifica se todos os pentagramas foram clicados
+                showAlert("Parabéns, você acaba de ganhar um pergaminho de transformação! resgate no menu inicial do jogo.");
+            } else {
+                showAlert("O tempo acabou! Você não conseguiu completar o ritual a tempo. Tente novamente para conquistar o pergaminho!");
+            }
+        }
+
+        startGame();
+    </script>
+
+</body>
+</html>
